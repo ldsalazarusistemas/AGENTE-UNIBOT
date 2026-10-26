@@ -1,0 +1,55 @@
+[
+  {
+    "pregunta": "¿Qué programas académicos ofrece UNINTEP?",
+    "fuente_esperada": "programas.md"
+  },
+  {
+    "pregunta": "¿Qué programas maneja UNINTED?",
+    "fuente_esperada": "programas.md"
+  },
+  {
+    "pregunta": "¿Cuáles son los requisitos de admisión?",
+    "fuente_esperada": "admisiones.md"
+  },
+  {
+    "pregunta": "¿Cuál es el horario de la biblioteca?",
+    "fuente_esperada": "biblioteca.md"
+  },
+  {
+    "pregunta": "¿Cómo se presta un libro?",
+    "fuente_esperada": "biblioteca.md"
+  },
+  {
+    "pregunta": "¿Cuáles son las tarifas de matrícula publicadas?",
+    "fuente_esperada": "costos.md"
+  },
+  {
+    "pregunta": "¿Cuándo comienzan las clases?",
+    "fuente_esperada": "calendario.md"
+  },
+  {
+    "pregunta": "¿Cuál es el teléfono general de UNINTEP?",
+    "fuente_esperada": "directorio.md"
+  },
+  {
+    "pregunta": "¿Qué servicios ofrece Bienestar Institucional?",
+    "fuente_esperada": "bienestar.md"
+  },
+  {
+    "pregunta": "¿Cómo solicito un certificado académico?",
+    "fuente_esperada": "tramites.md"
+  },
+  {
+    "pregunta": "¿Qué información está vigente y cómo verificarla?",
+    "fuente_esperada": "fuentesyvigencias.md"
+  },
+  {
+    "pregunta": "¿Que personal administrativo tiene UNINTEP?",
+    "fuente_esperada": "personal_administrativo.md"
+  },
+  {
+    "pregunta": "¿que informacion sobre semestres tienes?",
+    "fuente_esperada": "informacion_semestres.md"
+  }
+
+]

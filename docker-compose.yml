@@ -1,0 +1,74 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: unibot-ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+    # Núcleos de CPU: es el que genera las respuestas, así que lleva la mayor parte
+    cpus: 10.0
+    # Prioridad cuando ambos contenedores compiten por CPU (por defecto 1024)
+    cpu_shares: 2048
+    # Límites de velocidad de disco (bytes por segundo)
+    blkio_config:
+      device_read_bps:
+        - path: /dev/sda
+          rate: "60000mb"
+      device_write_bps:
+        - path: /dev/sda
+          rate: "40000mb"
+
+  unibot:
+    build: .
+    container_name: unibot-tensorflow
+    depends_on:
+      ollama:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      KERAS_BACKEND: tensorflow
+      TF_CPP_MIN_LOG_LEVEL: "2"
+      COMANDOS_ADMIN: "${COMANDOS_ADMIN:-0}"
+      COMANDOS_ADMIN_TOKEN: "${COMANDOS_ADMIN_TOKEN:-}"
+      MIN_SIMILITUD: "${MIN_SIMILITUD:-0.20}"
+      MAX_TOKENS: "${MAX_TOKENS:-384}"
+      MAX_PROMPT_CHARS: "${MAX_PROMPT_CHARS:-12000}"
+      OLLAMA_BASE_URL: "${OLLAMA_BASE_URL:-http://ollama:11434}"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-qwen2.5:3b}"
+      OLLAMA_TIMEOUT: "${OLLAMA_TIMEOUT:-1800}"
+      PRECARGAR_GENERADOR: "${PRECARGAR_GENERADOR:-1}"
+      CORS_ORIGINS: "${CORS_ORIGINS:-*}"
+      TFHUB_CACHE_DIR: /app/modelos/tfhub
+    volumes:
+      - ./conocimiento:/app/conocimiento
+      - ./data:/app/data
+      - ./modelos:/app/modelos
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 180s
+    restart: unless-stopped
+    mem_limit: 10g
+    # Núcleos de CPU: solo API y embeddings (llegó a 34 % de un núcleo)
+    cpus: 4.0
+    cpu_shares: 512
+    # Límites de velocidad de disco (bytes por segundo)
+    blkio_config:
+      device_read_bps:
+        - path: /dev/sda
+          rate: "60000mb"
+      device_write_bps:
+        - path: /dev/sda
+          rate: "40000mb"
+
+volumes:
+  ollama_data:

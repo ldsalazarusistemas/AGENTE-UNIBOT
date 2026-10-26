@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a2a66">
+    <title>UNIBOT | Asistente virtual UNINTEP</title>
+    <link rel="icon" type="image/jpeg" href="/images/logo.jpg">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" aria-label="Barra lateral">
+            <div class="brand">
+                <img class="logo logo--lg" src="/images/logo.jpg" alt="Logo UNINTEP">
+                <div>
+                    <h1>UNIBOT</h1>
+                    <p>Institución Universitaria de Roldanillo</p>
+                </div>
+            </div>
+
+            <button id="new-chat" class="btn-new" type="button" data-nuevo>
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                Nueva conversación
+            </button>
+
+            <nav class="topics" aria-label="Temas frecuentes">
+                <h2>Temas frecuentes</h2>
+                <button type="button" data-q="¿Cómo me inscribo?">Admisiones</button>
+                <button type="button" data-q="¿Qué programas ofrece la universidad?">Programas académicos</button>
+                <button type="button" data-q="¿Cuánto cuesta la matrícula?">Costos y matrícula</button>
+                <button type="button" data-q="¿Cuándo inicia el semestre?">Calendario académico</button>
+                <button type="button" data-q="¿Cuál es el horario de la biblioteca?">Biblioteca</button>
+                <button type="button" data-q="¿Qué servicios ofrece bienestar universitario?">Bienestar universitario</button>
+            </nav>
+
+            <div class="sidebar-foot">
+                <p>Respondo con los documentos oficiales cargados en UNIBOT. Confirma los datos importantes en los canales de la institución.</p>
+                <span class="tech">TensorFlow · Keras</span>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-brand">
+                    <img class="logo logo--sm" src="/images/logo.jpg" alt="Logo UNINTEP">
+                    <strong>UNIBOT</strong>
+                </div>
+                <h2 class="topbar-title">Asistente virtual</h2>
+
+                <div class="status" role="status">
+                    <span class="status-dot"></span>
+                    <span id="status-text">Conectando…</span>
+                </div>
+
+                <button id="new-chat-mobile" class="icon-btn" type="button" data-nuevo aria-label="Nueva conversación">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+            </header>
+
+            <section id="messages" class="messages" aria-live="polite" aria-label="Conversación">
+                <div id="welcome" class="welcome">
+                    <img class="logo logo--xl" src="/images/logo.jpg" alt="Logo UNINTEP">
+                    <h2>¿Qué quieres saber de UNINTEP?</h2>
+                    <p>
+                        Pregunta por admisiones, programas, costos, biblioteca y más.
+                        Respondo con la información oficial de la institución.
+                    </p>
+
+                    <div class="tiles">
+                        <button type="button" class="tile" data-q="¿Cómo me inscribo?">
+                            <span class="tile-icon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span>
+                            <span><strong>Admisiones</strong><span>¿Cómo me inscribo?</span></span>
+                        </button>
+                        <button type="button" class="tile" data-q="¿Qué programas ofrece la universidad?">
+                            <span class="tile-icon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg></span>
+                            <span><strong>Programas</strong><span>¿Qué programas ofrece la universidad?</span></span>
+                        </button>
+                        <button type="button" class="tile" data-q="¿Cuánto cuesta la matrícula?">
+                            <span class="tile-icon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M15 9.5c-.5-1-1.600-1.500-3-1.500-1.700 0-3 .8-3 2s1.200 1.700 3 2 3 .8 3 2-1.300 2-3 2c-1.400 0-2.500-.5-3-1.500M12 6v2m0 8v2"/></svg></span>
+                            <span><strong>Costos</strong><span>¿Cuánto cuesta la matrícula?</span></span>
+                        </button>
+                        <button type="button" class="tile" data-q="¿Cuándo inicia el semestre?">
+                            <span class="tile-icon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+                            <span><strong>Calendario</strong><span>¿Cuándo inicia el semestre?</span></span>
+                        </button>
+                        <button type="button" class="tile" data-q="¿Cuál es el horario de la biblioteca?">
+                            <span class="tile-icon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg></span>
+                            <span><strong>Biblioteca</strong><span>¿Cuál es el horario de la biblioteca?</span></span>
+                        </button>
+                        <button type="button" class="tile" data-q="¿Qué servicios ofrece bienestar universitario?">
+                            <span class="tile-icon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.800 4.600a5.500 5.500 0 0 0-7.800 0L12 5.700l-1-1.100a5.500 5.500 0 0 0-7.800 7.800l1 1.100L12 21l7.800-7.500 1-1.100a5.500 5.500 0 0 0 0-7.800z"/></svg></span>
+                            <span><strong>Bienestar</strong><span>¿Qué servicios ofrece bienestar universitario?</span></span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="composer-area">
+                <form id="chat-form" class="composer">
+                    <label for="message-input" class="sr-only">Escribe tu pregunta</label>
+                    <textarea
+                        id="message-input"
+                        placeholder="Escribe tu pregunta…"
+                        rows="1"
+                        maxlength="1000"
+                        required
+                    ></textarea>
+                    <button id="send-button" class="send" type="submit" aria-label="Enviar pregunta" disabled>
+                        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                    </button>
+                </form>
+                <p class="disclaimer">
+                    Las respuestas pueden contener errores. Verifica los datos importantes con las fuentes oficiales.
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>
