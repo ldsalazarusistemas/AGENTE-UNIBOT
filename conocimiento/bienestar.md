@@ -1,5 +1,5 @@
-Bienestar institucional UNINTEP
-Propósito
+## Bienestar institucional UNINTEP
+# Propósito
 
 Bienestar Institucional promueve el desarrollo integral de la comunidad universitaria y espacios de participación, convivencia, inclusión y formación personal.
 

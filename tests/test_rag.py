@@ -63,6 +63,38 @@ class RetrievalTests(unittest.TestCase):
 
         self.assertIn("## Misión de UNINTEP", mission_chunk)
 
+    def test_web_filename_is_readable_and_reuses_same_url(self):
+        url = (
+            "https://unintep.edu.co/portal/unidad-de-sistemas-y-electricidad/"
+            "ingenieria-informatica-snies-111554/"
+        )
+        folder = os.path.join(_test_directory.name, "web-names")
+        os.makedirs(folder, exist_ok=True)
+
+        first = bot._ruta_archivo_web(url, bot.Path(folder))
+        first.write_text(f"Fuente: {url}\n", encoding="utf-8")
+        second = bot._ruta_archivo_web(url, bot.Path(folder))
+
+        self.assertEqual(
+            first.name,
+            "unintep-edu-co-portal-unidad-de-sistemas-y-electricidad-"
+            "ingenieria-informatica-snies-111554.md",
+        )
+        self.assertEqual(second, first)
+
+    def test_web_filename_adds_suffix_for_different_url_collision(self):
+        folder = os.path.join(_test_directory.name, "web-collisions")
+        os.makedirs(folder, exist_ok=True)
+        first_url = "https://example.com/pagina/"
+        second_url = "https://example.com/pagina/?tipo=otra"
+
+        first = bot._ruta_archivo_web(first_url, bot.Path(folder))
+        first.write_text(f"Fuente: {first_url}\n", encoding="utf-8")
+        second = bot._ruta_archivo_web(second_url, bot.Path(folder))
+
+        self.assertEqual(first.name, "example-com-pagina.md")
+        self.assertEqual(second.name, "example-com-pagina-2.md")
+
     @patch.object(bot, "embed", return_value=np.array([[1.0, 0.0]]))
     def test_search_discards_results_below_similarity_threshold(self, _embed):
         result = bot.buscar_conocimiento("admisiones", k=3, umbral=0.5)
@@ -278,6 +310,41 @@ class RetrievalTests(unittest.TestCase):
             [{"nombre": "preguntasfrecuentes.md", "url": ""}],
         )
 
+    @patch.object(
+        bot,
+        "buscar_conocimiento",
+        return_value=[{
+            "fuente": "informacion_docente_Oscar_Pulgarin.md",
+            "texto": "Oscar Fernando Pulgarin Molina.",
+        }],
+    )
+    def test_context_includes_all_fragments_of_named_source(self, _search):
+        bot.ENTRADAS = [
+            {
+                "fuente": "informacion_docente_Oscar_Pulgarin.md",
+                "texto": "Oscar Fernando Pulgarin Molina.",
+            },
+            {
+                "fuente": "informacion_docente_Oscar_Pulgarin.md",
+                "texto": "Maestria completada en 2026.",
+            },
+        ]
+
+        context, sources = bot.construir_contexto(
+            "Informacion completa de Oscar Pulgarin",
+            [],
+        )
+
+        self.assertIn("Oscar Fernando Pulgarin Molina.", context)
+        self.assertIn("Maestria completada en 2026.", context)
+        self.assertEqual(
+            sources,
+            [{
+                "nombre": "informacion_docente_Oscar_Pulgarin.md",
+                "url": "",
+            }],
+        )
+
     @patch.object(bot, "construir_contexto", return_value=("", []))
     @patch.object(bot, "generar")
     def test_no_evidence_skips_generator_and_returns_sources(
@@ -379,6 +446,9 @@ class RetrievalTests(unittest.TestCase):
         self.assertIn("enumera todos los nombres", prompt)
         self.assertIn("Incluye también los programas técnicos y tecnológicos", prompt)
         self.assertIn("no lo asignes a otra", prompt)
+        self.assertIn("pide información completa", prompt)
+        self.assertIn("Incluye las fechas", prompt)
+        self.assertIn("responde siempre en español", prompt)
         self.assertNotIn("No debe repetirse.", prompt)
 
     def test_generator_sends_prompt_and_token_limit_to_ollama(self):

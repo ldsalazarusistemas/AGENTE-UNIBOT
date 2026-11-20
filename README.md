@@ -218,7 +218,7 @@ Se pueden establecer variables en un archivo `.env` junto a
 | --- | --- | --- |
 | `OLLAMA_MODEL` | `qwen2.5:3b` | Modelo que Ollama comprueba y descarga si falta |
 | `MIN_SIMILITUD` | `0.20` | Umbral de puntuación para incluir fragmentos |
-| `MAX_TOKENS` | `384` | Límite de tokens de la respuesta de Ollama |
+| `MAX_TOKENS` | `1024` | Límite de tokens de la respuesta de Ollama |
 | `MAX_PROMPT_CHARS` | `12000` | Límite aproximado del contexto del prompt |
 | `OLLAMA_TIMEOUT` | `1800` | Tiempo máximo de espera, en segundos |
 | `PRECARGAR_GENERADOR` | `1` | Comprueba Ollama durante el arranque |
@@ -276,27 +276,11 @@ Entre las operaciones disponibles están `/recargar`, `/aprender texto` y
 acceso de red, los documentos y el token antes de habilitar estas operaciones.
 No publiques el token ni guardes `.env` en el control de versiones.
 
-## Solución de problemas
+Las páginas importadas se guardan en `conocimiento/web` con un nombre legible
+basado en el dominio y la ruta de la URL. Si ya existe un archivo distinto con
+ese nombre, se agrega un sufijo para no sobrescribirlo.
 
-- **La página no abre:** ejecuta `docker compose ps` y revisa
-  `docker compose logs -f unibot`.
-- **El servicio sigue iniciando:** consulta `/health` y los registros. El
-  primer inicio descarga modelos y puede tardar varios minutos.
-- **Ollama no responde o descarga falla:** revisa
-  `docker compose logs -f ollama` y confirma que Docker tiene Internet.
-- **Responde que no hay información:** confirma que el dato esté escrito en
-  un archivo de `conocimiento/`, reinicia UNIBOT y revisa las fuentes
-  devueltas. Los ejemplos del clasificador no sustituyen esos documentos.
-- **Cambiaste configuración:** ejecuta
-  `docker compose up -d --force-recreate`.
+Ejemplo para importar una página desde PowerShell:
 
-## Limitaciones
-
-- Las respuestas dependen de la calidad, cobertura y vigencia de los
-  documentos locales.
-- El endpoint de chat transmite fragmentos de texto durante la generación de
-  Ollama; la ruta `POST /chat` sigue devolviendo una respuesta completa.
-- El almacenamiento de sesiones es en memoria y no se comparte entre
-  procesos ni sobrevive a un reinicio.
-- Docker configura `CUDA_VISIBLE_DEVICES=-1`; TensorFlow usa CPU en esta
-  configuración.
+```powershell
+$secureToken = Read-Host "Token administrador" -AsSecureString

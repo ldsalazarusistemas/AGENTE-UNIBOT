@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://ollama:11434").rstrip("/")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:3b")
 OLLAMA_TIMEOUT = float(os.getenv("OLLAMA_TIMEOUT", "1800"))
-MAX_TOKENS = int(os.getenv("MAX_TOKENS", "384"))
+MAX_TOKENS = int(os.getenv("MAX_TOKENS", "1024"))
 MAX_PROMPT_CHARS = int(os.getenv("MAX_PROMPT_CHARS", "12000"))
 
 _modelo_disponible = False
@@ -123,8 +123,15 @@ por una descripción general ni agregues elementos que no estén en las fuentes.
 Mantén cada programa bajo la unidad indicada en la fuente; no lo asignes a otra.
 Aplica la misma regla de completitud a otras listas explícitamente solicitadas.
 Responde normalmente en una a tres oraciones; resume en lugar de copiar
-párrafos largos, pero prioriza completar una lista solicitada. Conserva los
-nombres de programas, títulos y categorías tal como aparecen en la fuente.
+párrafos largos, pero prioriza completar una lista solicitada.
+Si la pregunta pide información completa, perfil, biografía o trayectoria,
+no te limites a un resumen breve: conserva todos los datos relevantes del
+contexto y organízalos por secciones. Incluye las fechas, los cargos, la
+formación, los proyectos, reconocimientos y enlaces cuando aparezcan.
+No sustituyas esta información completa por una descripción general.
+La información completa tiene prioridad sobre la longitud breve.
+Conserva los nombres de programas, títulos y categorías tal como aparecen
+en la fuente.
 No infieras que un programa pertenece a una carrera o nivel si el contexto no
 lo dice explícitamente.
 Si preguntan por la misión o la visión, resume la sección correspondiente
@@ -141,7 +148,7 @@ HISTORIAL RECIENTE:
 PREGUNTA:
 {pregunta}
 
-Responde en español, de forma clara y concisa."""
+OBLIGATORIO TENER EN CUENTA EL IDIOMA DE LA PREGUNTA: Responde en español si la pregunta es en español o en ingles si la pregunta es en ingles, de forma clara y concisa."""
 
 
 def _preparar_prompt(

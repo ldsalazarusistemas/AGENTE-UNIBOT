@@ -9,7 +9,7 @@ import time
 import unicodedata
 from ipaddress import ip_address
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 import numpy as np
 import requests
@@ -47,14 +47,10 @@ MARKDOWN_HEADING_RE = re.compile(r"^#{1,6}\s+\S")
 INDEX_FORMAT_VERSION = "2"
 TOKEN_RE = re.compile(r"[a-z0-9]+")
 STOPWORDS = {
-    "a", "al", "algo", "como", "con", "cual", "cuales", "de", "del",
-    "desde", "donde", "el", "en", "es", "esta", "este", "hay", "la",
-    "las", "lo", "los", "me", "mi", "para", "por", "que", "se", "su",
-    "un", "una", "uno", "y",
+    "a", "al", "algo", "como", "con", "cual", "cuales", "de", "del", "desde", "donde", "el", "en", "es", "esta", "este", "hay", "la", "las", "lo", "los", "me", "mi", "para", "por", "que", "se", "su", "un", "una", "uno", "y",
 }
 GENERIC_QUERY_TERMS = {
-    "carrera", "carreras", "oferta", "ofrece", "ofrecen", "programa",
-    "programas", "unin", "unintep", "universidad", "estudio", "estudiar",
+    "carrera", "carreras", "oferta", "ofrece", "ofrecen", "programa", "programas", "unin", "unintep", "universidad", "estudio", "estudiar",
 }
 REFUERZO_LEXICO = 0.20
 REFUERZO_TERMINO_ESPECIFICO = 0.30
@@ -76,6 +72,7 @@ INTENCION_FUENTE = {
 BONO_INTENCION = 0.08
 CONFIANZA_REFUERZO = 0.60
 CONFIANZA_DIRECTA = 0.80
+
 RESPUESTAS_DIRECTAS = {
     "saludo": (
         "¡Hola! Soy UNIBOT, el asistente virtual de UNINTEP. "
@@ -417,6 +414,40 @@ def construir_contexto(
 
     resultados = buscar_conocimiento(consulta, boost=boost)
 
+    # Si la pregunta nombra una fuente específica, incluir todos sus
+    # fragmentos evita que una biografía o catálogo quede resumido a uno
+    # o dos fragmentos semánticamente parecidos.
+    terminos_pregunta = _terminos(pregunta)
+    fuentes_nombradas: list[str] = []
+    with LOCK_INDICE:
+        for entrada in ENTRADAS:
+            terminos_fuente = _terminos(entrada["fuente"].replace("_", " "))
+            coincidencias = (
+                terminos_pregunta & terminos_fuente
+            ) - GENERIC_QUERY_TERMS
+            if coincidencias and entrada["fuente"] not in fuentes_nombradas:
+                fuentes_nombradas.append(entrada["fuente"])
+            if len(fuentes_nombradas) == 2:
+                break
+
+    if fuentes_nombradas:
+        with LOCK_INDICE:
+            vistos = {
+                (resultado["fuente"], resultado["texto"])
+                for resultado in resultados
+            }
+            for entrada in ENTRADAS:
+                if entrada["fuente"] not in fuentes_nombradas:
+                    continue
+                fragmento = (entrada["fuente"], entrada["texto"])
+                if fragmento in vistos:
+                    continue
+                resultados.append({
+                    "fuente": entrada["fuente"],
+                    "texto": entrada["texto"],
+                    "similitud": 1.0,
+                })
+
     partes = []
     fuentes = []
     vistas = set()
@@ -631,11 +662,45 @@ def aprender_web(url: str) -> str:
         etiqueta.decompose()
     texto = soup.get_text("\n\n", strip=True)
 
-    nombre = hashlib.sha256(url.encode("utf-8")).hexdigest()[:20] + ".md"
     carpeta = DOCS / "web"
-    carpeta.mkdir(exist_ok=True)
-    (carpeta / nombre).write_text(f"Fuente: {url}\n\n{texto}", encoding="utf-8")
+    carpeta.mkdir(parents=True, exist_ok=True)
+    ruta = _ruta_archivo_web(url, carpeta)
+    ruta.write_text(f"Fuente: {url}\n\n{texto}", encoding="utf-8")
     return sincronizar()
+
+
+def _ruta_archivo_web(url: str, carpeta: Path) -> Path:
+    parsed = urlparse(url)
+    segmentos = [parsed.hostname or "", *unquote(parsed.path).split("/")]
+    slug = "-".join(
+        re.sub(
+            r"[^a-z0-9]+",
+            "-",
+            unicodedata.normalize("NFKD", segmento)
+            .encode("ascii", "ignore")
+            .decode("ascii")
+            .casefold(),
+        ).strip("-")
+        for segmento in segmentos
+        if segmento.strip()
+    )
+    slug = slug[:180].rstrip("-") or "pagina-web"
+    base = carpeta / f"{slug}.md"
+    ruta = base
+    sufijo = 2
+
+    while ruta.exists():
+        try:
+            with ruta.open(encoding="utf-8") as archivo:
+                primera_linea = archivo.readline().rstrip("\r\n")
+        except OSError:
+            primera_linea = ""
+        if primera_linea == f"Fuente: {url}":
+            return ruta
+        ruta = carpeta / f"{slug}-{sufijo}.md"
+        sufijo += 1
+
+    return ruta
 
 
 def listar_fuentes() -> str:

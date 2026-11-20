@@ -38,3 +38,5 @@ Información académica, trámites y contactos: consultar el directorio instituc
 Directorio: https://unintep.edu.co/portal/directorio-administrativos/
 
 Nota: los horarios, números telefónicos, dependencias y denominaciones institucionales deben verificarse periódicamente en el portal oficial.
+
+						
