@@ -70,7 +70,7 @@ body::after{content:"";position:fixed;inset:-50px;z-index:-1;pointer-events:none
 <section id="q" aria-label="Consultas estudiantiles"><div id="qb"></div><div id="ans" aria-live="polite">Elige un tema para que UNIBOT te oriente.</div></section>
 <button id="c"><a href="unibot.html">Comunícate con UNIBOT</a></button>
 <script>
-const TXT="Hola, soy UniBot, agente exclusivo para UNINTEP.";
+const TXT="Hola, soy UNIBOT, agente exclusivo para UNINTEP.";
 const st=document.getElementById('stage'),cap=document.getElementById('cap'),b=document.getElementById('b');
 let ac;
 function servo(t0,f0,f1,d,g){const o=ac.createOscillator(),v=ac.createGain();o.type='square';o.frequency.setValueAtTime(f0,t0);o.frequency.linearRampToValueAtTime(f1,t0+d);v.gain.setValueAtTime(g,t0);v.gain.linearRampToValueAtTime(0,t0+d);o.connect(v).connect(ac.destination);o.start(t0);o.stop(t0+d)}
