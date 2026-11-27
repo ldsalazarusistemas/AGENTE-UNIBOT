@@ -32,6 +32,6 @@
 24	JUAN PABLO LEMOS
 25	NIKO VALENCIA MARQUEZ
 
-hay un total de 25 esrudiantes de ingenieria informatica de 9 o noveno semestre
+hay un total de 25 esrudiantes de ingenieria informatica en el 6 semestre
 
 
